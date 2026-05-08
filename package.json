@@ -1,0 +1,14 @@
+{
+  "name": "airbnb-lead-scraper",
+  "version": "1.0.0",
+  "description": "MVP web app for extracting and structuring Airbnb property manager leads from Google Maps",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "install:playwright": "npx --prefix backend playwright install chromium",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run start --prefix frontend",
+    "build:frontend": "npm run build --prefix frontend",
+    "start:backend": "npm run start --prefix backend"
+  }
+}

@@ -5,6 +5,21 @@ Microsoft account and browse their Outlook inbox in a clean dashboard.
 Emails are pulled server-side via the Microsoft Graph delta API and
 cached in Postgres. OAuth tokens are encrypted at rest.
 
+## Documentation
+
+Full docs live in [`docs/`](./docs/README.md):
+
+| Doc | Use it when… |
+| --- | --- |
+| [docs/SETUP.md](./docs/SETUP.md)             | You need to know every credential, every env var, and exactly how to obtain them (incl. the full Microsoft Entra ID app-registration walkthrough). |
+| [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) | You want the day-to-day dev workflow, dev-mode internals, troubleshooting, and the smoke test. |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | You want a tour of how sign-in, sync, and dashboard render actually flow through the codebase. |
+| [docs/DATA_MODEL.md](./docs/DATA_MODEL.md)   | You're editing the Prisma schema or writing a migration. |
+| [docs/API.md](./docs/API.md)                 | You're calling the HTTP API and need request/response shapes and status codes. |
+| [docs/SECURITY.md](./docs/SECURITY.md)       | You're reviewing the security posture (token encryption, sessions, CSRF, rate limit, threat model, key rotation). |
+| [docs/OPERATIONS.md](./docs/OPERATIONS.md)   | You're deploying it (env vars in prod, platform notes, deploy checklist). |
+| [docs/GAPS.md](./docs/GAPS.md)               | You want the honest list of what's missing or incomplete and the smallest patch path for each. |
+
 ## Stack
 
 - **Next.js 14** (App Router, React Server Components)

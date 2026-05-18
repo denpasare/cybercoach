@@ -16,7 +16,7 @@ Minimal production-ready SaaS that connects Microsoft accounts, syncs emails fro
 - Microsoft-only OAuth login (`openid email profile offline_access Mail.Read`)
 - Secure HTTP-only cookie sessions
 - Access/refresh token encryption at rest (AES-256-GCM)
-- Protected `/dashboard` route via middleware
+- Protected `/dashboard` route via proxy middleware
 - Server-only Graph API sync (`/api/sync`)
 - Incremental sync using delta tokens
 - Basic sync rate limiting
@@ -51,6 +51,12 @@ Minimal production-ready SaaS that connects Microsoft accounts, syncs emails fro
 
 5. Open http://localhost:3000
 
+## Cursor Cloud environment
+
+- Repo-level cloud setup lives in `.cursor/environment.json`.
+- Cloud agents run `npm install && npm run prisma:generate` during environment install.
+- Configure `DATABASE_URL` in cloud secrets for migrations/runtime DB access.
+
 ## Required Environment Variables
 
 See `.env.example` for all values.
@@ -67,4 +73,4 @@ See `.env.example` for all values.
 - Graph access/refresh tokens are encrypted before DB persistence.
 - Tokens are never sent to the frontend.
 - Sync only runs in server code (`src/lib/email-sync.ts` + `src/app/api/sync/route.ts`).
-- Dashboard route is protected in middleware (`src/middleware.ts`).
+- Dashboard route is protected in proxy middleware (`src/proxy.ts`).

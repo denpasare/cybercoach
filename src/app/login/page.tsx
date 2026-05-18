@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth, signIn } from "@/lib/auth";
+import { isDevModeEnabled } from "@/lib/dev-mode";
 
 interface LoginPageProps {
   searchParams?: { callbackUrl?: string; error?: string };
@@ -11,6 +12,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   const callbackUrl = searchParams?.callbackUrl ?? "/dashboard";
   const error = searchParams?.error;
+  const devMode = isDevModeEnabled();
 
   async function signInWithMicrosoft() {
     "use server";
@@ -44,6 +46,26 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             Continue with Microsoft
           </button>
         </form>
+
+        {devMode ? (
+          <>
+            <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wider text-slate-400">
+              <span className="h-px flex-1 bg-slate-200" />
+              or for local dev
+              <span className="h-px flex-1 bg-slate-200" />
+            </div>
+            <a
+              href="/api/dev/signin"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 shadow-sm transition hover:bg-amber-100"
+            >
+              Sign in as dev user (skip Microsoft)
+            </a>
+            <p className="mt-3 text-xs text-amber-700">
+              Dev mode is on (<code>ENABLE_DEV_AUTH=true</code>). The
+              sync endpoint will return synthetic emails for this user.
+            </p>
+          </>
+        ) : null}
 
         <p className="mt-6 text-xs text-slate-500">
           By signing in, you authorize Emailyzer to read your Outlook mail

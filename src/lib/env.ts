@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const truthy = new Set(["1", "true", "yes", "on"]);
+
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   AUTH_SECRET: z.string().min(16, "AUTH_SECRET must be at least 16 characters"),
@@ -10,6 +12,13 @@ const envSchema = z.object({
   TOKEN_ENCRYPTION_KEY: z
     .string()
     .min(1, "TOKEN_ENCRYPTION_KEY is required (base64-encoded 32 bytes)"),
+  ENABLE_DEV_AUTH: z
+    .string()
+    .optional()
+    .transform((v) => (v ? truthy.has(v.toLowerCase()) : false)),
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
 });
 
 type Env = z.infer<typeof envSchema>;

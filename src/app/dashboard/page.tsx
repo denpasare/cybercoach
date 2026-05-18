@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isDevModeEnabled } from "@/lib/dev-mode";
 import { DashboardClient } from "./dashboard-client";
 
 export const dynamic = "force-dynamic";
@@ -44,6 +45,7 @@ export default async function DashboardPage() {
       lastSyncedAt={
         syncState?.lastSyncedAt ? syncState.lastSyncedAt.toISOString() : null
       }
+      devMode={isDevModeEnabled()}
     />
   );
 }

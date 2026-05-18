@@ -19,6 +19,7 @@ interface DashboardClientProps {
   user: { name: string | null; email: string | null; image: string | null };
   initialEmails: DashboardEmail[];
   lastSyncedAt: string | null;
+  devMode?: boolean;
 }
 
 function formatDate(iso: string | null): string {
@@ -54,6 +55,7 @@ export function DashboardClient({
   user,
   initialEmails,
   lastSyncedAt,
+  devMode = false,
 }: DashboardClientProps) {
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(
@@ -105,6 +107,14 @@ export function DashboardClient({
           <span className="text-lg font-semibold tracking-tight">
             Emailyzer
           </span>
+          {devMode ? (
+            <span
+              title="ENABLE_DEV_AUTH=true — emails are synthetic"
+              className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-800"
+            >
+              Dev mode
+            </span>
+          ) : null}
           <span className="text-xs text-slate-500">
             Last sync: {formatRelative(lastSyncedAt)}
           </span>

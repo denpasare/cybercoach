@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: emailyzer-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: emailyzer
+      POSTGRES_PASSWORD: emailyzer
+      POSTGRES_DB: emailyzer
+    ports:
+      - "5432:5432"
+    volumes:
+      - emailyzer-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U emailyzer -d emailyzer"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  emailyzer-pgdata:

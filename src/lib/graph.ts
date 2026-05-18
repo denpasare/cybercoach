@@ -1,5 +1,7 @@
 import { prisma } from "./prisma";
-import { getValidAccessToken } from "./tokens";
+import { isDevModeEnabled } from "./dev-mode";
+import { syncMockEmails } from "./mock-graph";
+import { MissingMicrosoftAccountError, getValidAccessToken } from "./tokens";
 
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0";
 const MESSAGE_SELECT =
@@ -84,7 +86,18 @@ function pickFromAddress(msg: GraphMessage) {
  * - Pagination is followed up to MAX_PAGES_PER_SYNC pages per run.
  */
 export async function syncEmails(userId: string): Promise<SyncResult> {
-  const { accessToken } = await getValidAccessToken(userId);
+  let accessToken: string;
+  try {
+    ({ accessToken } = await getValidAccessToken(userId));
+  } catch (err) {
+    // In dev mode, users created via /api/dev/signin have no linked
+    // Microsoft account. Fall back to the synthetic email source so the
+    // full dashboard flow is testable without an Azure registration.
+    if (err instanceof MissingMicrosoftAccountError && isDevModeEnabled()) {
+      return syncMockEmails(userId);
+    }
+    throw err;
+  }
 
   const state = await prisma.syncState.findUnique({ where: { userId } });
 

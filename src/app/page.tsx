@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { auth, signIn, signOut } from "@/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import styles from "./page.module.css";
 
 export default async function HomePage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   return (
     <main className={styles.page}>
@@ -15,16 +16,14 @@ export default async function HomePage() {
         </p>
 
         {!session ? (
-          <form
-            action={async () => {
-              "use server";
-              await signIn("microsoft", { redirectTo: "/dashboard" });
-            }}
+          <Link
+            className={styles.primaryButton}
+            href="/api/auth/signin/microsoft?callbackUrl=/dashboard"
           >
-            <button className={styles.primaryButton} type="submit">
+            <span>
               Sign in with Microsoft
-            </button>
-          </form>
+            </span>
+          </Link>
         ) : (
           <div className={styles.actions}>
             <p className={styles.signedInText}>
@@ -33,16 +32,12 @@ export default async function HomePage() {
             <Link href="/dashboard" className={styles.primaryButton}>
               Open dashboard
             </Link>
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/" });
-              }}
+            <Link
+              className={styles.secondaryButton}
+              href="/api/auth/signout?callbackUrl=/"
             >
-              <button className={styles.secondaryButton} type="submit">
-                Sign out
-              </button>
-            </form>
+              Sign out
+            </Link>
           </div>
         )}
       </section>

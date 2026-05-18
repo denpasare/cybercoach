@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { z } from "zod";
-import { auth } from "@/auth";
+import { authOptions } from "@/lib/auth";
 import { syncEmails } from "@/lib/email-sync";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const syncRequestSchema = z.object({}).passthrough();
 
 export async function POST(request: Request) {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

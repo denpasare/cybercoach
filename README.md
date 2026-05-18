@@ -14,7 +14,7 @@ Minimal production-ready SaaS that connects Microsoft accounts, syncs emails fro
 ## Features
 
 - Microsoft-only OAuth login (`openid email profile offline_access Mail.Read`)
-- Secure database sessions stored in HTTP-only cookies
+- Secure HTTP-only cookie sessions
 - Access/refresh token encryption at rest (AES-256-GCM)
 - Protected `/dashboard` route via middleware
 - Server-only Graph API sync (`/api/sync`)
@@ -59,7 +59,7 @@ See `.env.example` for all values.
 - `AUTH_SECRET`
 - `AUTH_MICROSOFT_ENTRA_ID_ID`
 - `AUTH_MICROSOFT_ENTRA_ID_SECRET`
-- `AUTH_MICROSOFT_ENTRA_ID_ISSUER`
+- `AUTH_MICROSOFT_ENTRA_ID_TENANT_ID` (`common` for multi-tenant)
 - `TOKEN_ENCRYPTION_KEY` (base64-encoded 32-byte key)
 
 ## Security Notes

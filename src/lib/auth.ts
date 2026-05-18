@@ -1,17 +1,19 @@
-import type { Adapter, AdapterAccount } from "next-auth/adapters";
-import NextAuth from "next-auth";
-import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
+import type { NextAuthOptions } from "next-auth";
+import type { Adapter } from "next-auth/adapters";
+import AzureAD from "next-auth/providers/azure-ad";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { encryptToken } from "@/lib/token-crypto";
 
 function withEncryptedTokenAdapter(): Adapter {
-  const adapter = PrismaAdapter(prisma);
+  const adapter = PrismaAdapter(prisma) as Adapter;
 
   return {
     ...adapter,
-    async linkAccount(account: AdapterAccount) {
-      return prisma.account.upsert({
+    async linkAccount(
+      account: Parameters<NonNullable<Adapter["linkAccount"]>>[0],
+    ) {
+      await prisma.account.upsert({
         where: {
           provider_providerAccountId: {
             provider: account.provider,
@@ -41,18 +43,20 @@ function withEncryptedTokenAdapter(): Adapter {
           session_state: account.session_state?.toString() ?? null,
         },
       });
+
+      return;
     },
-  };
+  } as Adapter;
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: withEncryptedTokenAdapter(),
   providers: [
-    MicrosoftEntraID({
+    AzureAD({
       id: "microsoft",
-      clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID,
-      clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
-      issuer: process.env.AUTH_MICROSOFT_ENTRA_ID_ISSUER,
+      clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID ?? "",
+      clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET ?? "",
+      tenantId: process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID ?? "common",
       authorization: {
         params: {
           scope: "openid email profile offline_access Mail.Read",
@@ -83,14 +87,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/",
   },
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
   cookies: {
     sessionToken: {
       name:
         process.env.NODE_ENV === "production"
-          ? "__Secure-authjs.session-token"
-          : "authjs.session-token",
+          ? "__Secure-next-auth.session-token"
+          : "next-auth.session-token",
       options: {
         httpOnly: true,
         sameSite: "lax",
@@ -142,13 +146,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return true;
     },
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    async session({ session, token }) {
+      if (session.user && token.sub) {
+        session.user.id = token.sub;
       }
 
       return session;
     },
   },
-  trustHost: true,
-});
+};

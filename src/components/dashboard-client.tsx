@@ -81,7 +81,7 @@ export function DashboardClient({
       <section className={styles.grid}>
         <aside className={styles.listPanel}>
           {emails.length === 0 ? (
-            <p className={styles.empty}>No emails synced yet. Click "Sync now".</p>
+            <p className={styles.empty}>No emails synced yet. Click &quot;Sync now&quot;.</p>
           ) : (
             <ul className={styles.list}>
               {emails.map((email) => {
